@@ -1,11 +1,11 @@
-import dotenv from "dotenv";
 import { Pool } from "pg";
-dotenv.config();
-const { POSTGRES_DB, POSTGRES_HOST, POSTGRES_PASSWORD, POSTGRES_USER } =
-  process.env;
+import config from "./config";
 export const client = new Pool({
-  database: POSTGRES_DB,
-  host: POSTGRES_HOST,
-  user: POSTGRES_USER,
-  password: POSTGRES_PASSWORD,
+  database: config.database,
+  host: config.host,
+  user: config.user,
+  password: config.password,
+});
+client.on("error", (error: Error) => {
+  console.error(error.message);
 });

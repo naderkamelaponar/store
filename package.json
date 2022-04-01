@@ -5,12 +5,13 @@
   "main": "index.js",
   "scripts": {
     "tsc": "tsc",
-    "watch": "tsc-watch --esModuleInterop src/server.ts --outDir ./dist --onSuccess node ./dist/server.js",
-    "dev": "nodemon src/index.ts",
+    "watch": "tsc-watch --onSuccess node ./dist/server.js",
+    "dev": "nodemon src/server.ts",
     "build": "tsc",
-    "start": "npm run build && node dist/index.js",
+    "start": "npm run build && node dist/server.js",
     "format": "prettier --write ./src/**/*.ts",
-    "test": "ENV=test db-migrate --env test up && jasmine-ts && db-migrate"
+    "dont:test": "set --config config/database.json -e NODE_ENV=test db-migrate up --env test up && tsc && jasmine && db-migrate reset",
+    "test": "npm run build && jasmine"
   },
   "repository": {
     "type": "git",
@@ -24,15 +25,20 @@
   },
   "homepage": "https://github.com/naderkamelaponar/store#readme",
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.13",
     "@types/jasmine": "^4.0.0",
+    "@types/morgan": "^1.9.3",
+    "@types/pg": "^8.6.5",
     "@typescript-eslint/eslint-plugin": "^5.16.0",
     "@typescript-eslint/parser": "^5.16.0",
     "eslint": "^8.12.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
     "jasmine": "^4.0.2",
+    "jasmine-spec-reporter": "^7.0.0",
     "jasmine-ts": "^0.4.0",
+    "morgan": "^1.10.0",
     "nodemon": "^2.0.15",
     "prettier": "^2.6.1",
     "ts-node": "^10.7.0",
@@ -40,6 +46,7 @@
     "typescript": "^4.6.2"
   },
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "db-migrate": "^0.11.13",
     "db-migrate-pg": "^1.2.2",
     "dotenv": "^16.0.0",
