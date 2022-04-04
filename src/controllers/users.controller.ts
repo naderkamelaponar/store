@@ -1,6 +1,11 @@
+import config from "../config";
 import { NextFunction, Request, Response } from "express";
-import { UserModel } from "../models/users.model";
+import jwt from "jsonwebtoken";
+import { User, UserModel } from "../models/users.model";
 const user = new UserModel();
+const token = (u: User): string => {
+  return jwt.sign({ user: u }, config.tokenSecret as string);
+};
 export const create = async (
   req: Request,
   res: Response,
@@ -8,11 +13,44 @@ export const create = async (
 ) => {
   try {
     const newUser = await user.create(req.body);
-    res.json({
-      status: "Success",
-      message: "New User has been created",
-      data: { ...newUser },
-    });
+    if (newUser) {
+      //const token = jwt.sign({ user: newUser }, config.tokenSecret as string);
+      res.json({
+        status: "Success",
+        message: "New User has been created",
+        data: { user: newUser, token: token(newUser) },
+      });
+    } else {
+      res.status(400).json({
+        status: "Faild",
+        message: "Couldn't create a new user",
+      });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+export const selectUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId: string = req.params.id;
+    const selectedUser = await user.selectUser(userId);
+    console.log(userId, req.params);
+    if (selectedUser) {
+      res.json({
+        status: "Success",
+        message: "Selected a user",
+        data: { user: selectedUser },
+      });
+    } else {
+      res.status(400).json({
+        status: "Faild",
+        message: "Couldn't Select a user",
+      });
+    }
   } catch (error) {
     next(error);
   }
@@ -24,11 +62,19 @@ export const selectAll = async (
 ) => {
   try {
     const users = await user.selectAll();
-    res.json({
-      status: "Successed",
-      message: "Users have been retrived",
-      data: { ...users },
-    });
+
+    if (users.length) {
+      res.json({
+        status: "Succeded",
+        message: "Selected All Users",
+        users: { ...users },
+      });
+    } else {
+      res.status(400).send({
+        status: "Faild",
+        message: "Something went wrong",
+      });
+    }
   } catch (error) {
     next(error);
   }
@@ -39,22 +85,18 @@ export const deleteUser = async (
   next: NextFunction
 ) => {
   try {
-    const resault = await user.delete(req.params.id as string);
-    const resJson = {
-      status: "",
-      message: "",
-      data: {},
-    };
-
+    const resault = await user.delete(req.body.id);
     if (resault !== undefined) {
-      resJson.status = "Succeded";
-      resJson.message = "User has been deleted";
-      resJson.data = { ...resault };
+      res.json({
+        status: "Succeded",
+        message: "User has been deleted",
+        data: resault,
+      });
     } else {
-      resJson.status = "Faild";
-      resJson.message = "Something went wrong";
+      res
+        .status(400)
+        .json({ status: "Faild", message: "Something went wrong" });
     }
-    res.json(resJson);
   } catch (error) {
     next(error);
   }
@@ -66,21 +108,42 @@ export const updateUser = async (
 ) => {
   try {
     const update = await user.updateUser(req.body);
-    const resJson = {
-      status: "",
-      message: "",
-      data: {},
-    };
 
-    if (update !== undefined) {
-      resJson.status = "Succeded";
-      resJson.message = "User has been Uodated";
-      resJson.data = { ...update };
+    if (update !== null) {
+      res.json({
+        status: "Succeded",
+        message: "User has been Updated",
+        data: { user: update, token: token(update) },
+      });
     } else {
-      resJson.status = "Faild";
-      resJson.message = "Something went wrong";
+      res
+        .status(400)
+        .json({ status: "Faild", message: "Something went wrong" });
     }
-    res.json(resJson);
+  } catch (error) {
+    next(error);
+  }
+};
+export const authinticate = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { username, password } = req.body;
+    const userInfo = await user.login(username, password);
+    if (userInfo?.username === username) {
+      res.json({
+        status: "Succeded",
+        message: "Authorized User",
+        data: { user: userInfo, token: token(userInfo as User) },
+      });
+    } else {
+      res.status(401).json({
+        status: "Faild",
+        message: "UnAuthorized User",
+      });
+    }
   } catch (error) {
     next(error);
   }

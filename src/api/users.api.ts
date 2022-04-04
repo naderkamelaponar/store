@@ -1,12 +1,15 @@
 import { Router } from "express";
 import * as userController from "../controllers/users.controller";
+import { authorizationMiddleWare } from "../middlewares/auth.methods";
 const userRoute = Router();
 userRoute
-  .route("/user")
+  .route("/users")
   .post(userController.create)
   .get(userController.selectAll);
+userRoute.route("/users/user/:id").get(userController.selectUser);
 userRoute
-  .route("/user/:id")
-  .delete(userController.deleteUser)
-  .patch(userController.updateUser);
+  .route("/users/user")
+  .delete(authorizationMiddleWare, userController.deleteUser)
+  .patch(authorizationMiddleWare, userController.updateUser);
+userRoute.route("/users/user/login").post(userController.authinticate);
 export default userRoute;

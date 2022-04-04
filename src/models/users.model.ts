@@ -9,16 +9,29 @@ export type User = {
   email: string;
   password: string;
 };
+const checkUserName = async (username: string): Promise<string | null> => {
+  const conn = await client.connect();
+  const sql = "SELECT id FROM users_table WHERE username =$1";
+  const resault = await conn.query(sql, [username]);
+  conn.release();
+  if (resault.rows.length) {
+    return resault.rows[0]["id"];
+  } else {
+    return null;
+  }
+};
+const returning = "returning id,username,first_name,last_name,email ";
 const hashPassword = (password: string) => {
   const salt = parseInt(config.salt as string, 10);
   return bcrypt.hashSync(`${config.pepper}${password}`, salt);
 };
-const returning = " RETURNING id, username,first_name,last_name,email";
+
 export class UserModel {
   async selectAll(): Promise<User[]> {
     try {
       const conn = await client.connect();
-      const sql = "SELECT * FROM users_table";
+      const sql =
+        "SELECT id,username,first_name,last_name,email FROM users_table ";
       const resualt = await conn.query(sql);
       conn.release();
       return resualt.rows;
@@ -26,22 +39,32 @@ export class UserModel {
       throw new Error(`error ${error}`);
     }
   }
-  async selectUser(id: string): Promise<User[]> {
+  async selectUser(id: string): Promise<User | null> {
     try {
       const conn = await client.connect();
-      const sql = `SELECT FROM users_table where id=($1)`;
+      const sql = `SELECT  id,username,first_name,last_name,email FROM users_table WHERE id=$1 `;
       const resault = await conn.query(sql, [id]);
+      console.log(id);
       conn.release();
-      return resault.rows[0];
+      if (resault.rows.length) {
+        return resault.rows[0];
+      } else {
+        return null;
+      }
     } catch (err) {
       throw new Error(`error ${err}`);
     }
   }
-  async create(u: User): Promise<User> {
+  async create(u: User): Promise<User | null> {
     try {
+      const username = await checkUserName(u.username);
+      if (username) {
+        return null;
+      }
       const conn = await client.connect();
       const sql =
-        "INSERT INTO users_table (username,first_name,last_name,email,password) VALUES ($1,$2,$3,$4,$5) returning *";
+        "INSERT INTO users_table (username,first_name,last_name,email,password) VALUES ($1,$2,$3,$4,$5) " +
+        returning;
       const resault = await conn.query(sql, [
         u.username,
         u.first_name,
@@ -58,8 +81,7 @@ export class UserModel {
   async delete(id: string): Promise<User> {
     try {
       const conn = await client.connect();
-      const sql = "DELETE FROM users_table WHERE id=$1" + returning;
-      console.log(sql);
+      const sql = "DELETE FROM users_table WHERE id=$1 " + returning;
       const resault = await conn.query(sql, [id]);
       conn.release();
       return resault.rows[0];
@@ -67,7 +89,11 @@ export class UserModel {
       throw new Error(`Error:${error}`);
     }
   }
-  async updateUser(u: User): Promise<User> {
+  async updateUser(u: User): Promise<User | null> {
+    const uId = await checkUserName(u.username);
+    if (uId !== null && uId !== u.id) {
+      return null;
+    }
     try {
       const conn = await client.connect();
       const sql =
@@ -83,6 +109,33 @@ export class UserModel {
       ]);
       conn.release();
       return resault.rows[0];
+    } catch (error) {
+      throw new Error(`Error:${error}`);
+    }
+  }
+  async login(username: string, password: string): Promise<User | null> {
+    try {
+      const conn = await client.connect();
+      const resault = await conn.query(
+        "SELECT password FROM users_table WHERE username=$1",
+        [username]
+      );
+      if (resault.rows.length) {
+        const { password: hashPassword } = resault.rows[0];
+        const isValid = bcrypt.compareSync(
+          `${config.pepper}${password}`,
+          hashPassword
+        );
+        if (isValid) {
+          const userData = await conn.query(
+            "SELECT id,username,first_name,last_name,email from users_table WHERE username=$1",
+            [username]
+          );
+          return userData.rows[0];
+        }
+      }
+      conn.release();
+      return null;
     } catch (error) {
       throw new Error(`Error:${error}`);
     }

@@ -1,5 +1,6 @@
 import { Pool } from "pg";
 import config from "./config";
+console.log(config.database);
 export const client = new Pool({
   database: config.database,
   host: config.host,
