@@ -82,7 +82,7 @@ describe("Test The Users Model", () => {
     });
     it("Should SELECTALL users", async () => {
       const resault = await userModelMethods.selectAll();
-      expect(resault.length).toBeGreaterThan(1);
+      expect(resault?.length).toBeGreaterThan(1);
     });
   });
   describe("Test the DELETE Method", () => {

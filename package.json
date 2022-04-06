@@ -9,6 +9,7 @@
     "dev": "nodemon src/server.ts",
     "build": "tsc",
     "start": "npm run build && node dist/server.js",
+    "lint": "",
     "format": "prettier --write ./src/**/*.ts",
     "dont:test": "set NODE_ENV=test&& db-migrate up --env test   && tsc && jasmine && db-migrate reset",
     "dev:test": "set NODE_ENV=dev&& db-migrate up --env dev   && tsc && jasmine && db-migrate reset",

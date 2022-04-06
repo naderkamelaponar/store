@@ -1,6 +1,7 @@
-import { Router } from "express";
+import { Router, Response, Request } from "express";
 import * as productController from "../controllers/products.controller";
 import { authorizationMiddleWare } from "../middlewares/auth.methods";
+
 const productRoute = Router();
 productRoute
   .route("/products")
@@ -13,4 +14,5 @@ productRoute
   .route("/products/product")
   .delete(authorizationMiddleWare, productController.deleteProduct)
   .patch(authorizationMiddleWare, productController.updateProduct);
+
 export default productRoute;

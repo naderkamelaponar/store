@@ -1,7 +1,7 @@
 import { client } from "../database";
 export type Product = {
   id?: string;
-  name: string;
+  product_name: string;
   price: number;
 };
 
@@ -26,7 +26,6 @@ export class ProductModel {
       const conn = await client.connect();
       const sql = `SELECT * FROM products_table WHERE id=$1 `;
       const resault = await conn.query(sql, [id]);
-      console.log(id);
       conn.release();
       if (resault.rows.length) {
         return resault.rows[0];
@@ -41,8 +40,8 @@ export class ProductModel {
     try {
       const conn = await client.connect();
       const sql =
-        "INSERT INTO products_table (name,price) VALUES($1,$2) RETURNING *";
-      const resault = await conn.query(sql, [p.name, p.price]);
+        "INSERT INTO products_table (product_name,product_price) VALUES($1,$2) RETURNING *";
+      const resault = await conn.query(sql, [p.product_name, p.price]);
       conn.release();
       if (resault.rows.length) {
         return resault.rows[0];
@@ -72,8 +71,8 @@ export class ProductModel {
     try {
       const conn = await client.connect();
       const sql =
-        "UPDATE products_table SET name=$1, price=$2 WHERE id=$3 RETURNING *";
-      const resault = await conn.query(sql, [p.name, p.price, p.id]);
+        "UPDATE products_table SET product_name=$1, product_price=$2 WHERE id=$3 RETURNING *";
+      const resault = await conn.query(sql, [p.product_name, p.price, p.id]);
       conn.release();
       if (resault.rows.length) {
         return resault.rows[0];

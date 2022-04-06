@@ -11,5 +11,5 @@ userRoute
   .route("/users/user")
   .delete(authorizationMiddleWare, userController.deleteUser)
   .patch(authorizationMiddleWare, userController.updateUser);
-userRoute.route("/users/user/login").post(userController.authinticate);
+userRoute.route("/users/login").post(userController.authinticate);
 export default userRoute;

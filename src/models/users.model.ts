@@ -21,20 +21,24 @@ const checkUserName = async (username: string): Promise<string | null> => {
   }
 };
 const returning = "returning id,username,first_name,last_name,email ";
-const hashPassword = (password: string) => {
+const hashPassword = (password: string): string => {
   const salt = parseInt(config.salt as string, 10);
   return bcrypt.hashSync(`${config.pepper}${password}`, salt);
 };
 
 export class UserModel {
-  async selectAll(): Promise<User[]> {
+  async selectAll(): Promise<User[] | null> {
     try {
       const conn = await client.connect();
       const sql =
         "SELECT id,username,first_name,last_name,email FROM users_table ";
-      const resualt = await conn.query(sql);
+      const resault = await conn.query(sql);
       conn.release();
-      return resualt.rows;
+      if (resault.rows.length) {
+        return resault.rows;
+      } else {
+        return null;
+      }
     } catch (error) {
       throw new Error(`error ${error}`);
     }
@@ -44,7 +48,6 @@ export class UserModel {
       const conn = await client.connect();
       const sql = `SELECT  id,username,first_name,last_name,email FROM users_table WHERE id=$1 `;
       const resault = await conn.query(sql, [id]);
-      console.log(id);
       conn.release();
       if (resault.rows.length) {
         return resault.rows[0];
@@ -73,18 +76,26 @@ export class UserModel {
         hashPassword(u.password),
       ]);
       conn.release();
-      return resault.rows[0];
+      if (resault.rows.length) {
+        return resault.rows[0];
+      } else {
+        return null;
+      }
     } catch (error) {
       throw new Error(` Error: ${error}`);
     }
   }
-  async delete(id: string): Promise<User> {
+  async delete(id: string): Promise<User | null> {
     try {
       const conn = await client.connect();
       const sql = "DELETE FROM users_table WHERE id=$1 " + returning;
       const resault = await conn.query(sql, [id]);
       conn.release();
-      return resault.rows[0];
+      if (resault.rows.length) {
+        return resault.rows[0];
+      } else {
+        return null;
+      }
     } catch (error) {
       throw new Error(`Error:${error}`);
     }
@@ -108,7 +119,11 @@ export class UserModel {
         u.id,
       ]);
       conn.release();
-      return resault.rows[0];
+      if (resault.rows.length) {
+        return resault.rows[0];
+      } else {
+        return null;
+      }
     } catch (error) {
       throw new Error(`Error:${error}`);
     }
@@ -131,10 +146,10 @@ export class UserModel {
             "SELECT id,username,first_name,last_name,email from users_table WHERE username=$1",
             [username]
           );
+          conn.release();
           return userData.rows[0];
         }
       }
-      conn.release();
       return null;
     } catch (error) {
       throw new Error(`Error:${error}`);

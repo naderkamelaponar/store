@@ -47,7 +47,7 @@ export const selectProduct = async (
       });
     }
   } catch (error) {
-    next(error);
+    next();
   }
 };
 export const selectAll = async (
@@ -67,7 +67,7 @@ export const selectAll = async (
     } else {
       res.status(400).send({
         status: "Faild",
-        message: "Something went wrong",
+        message: "Couldn't Select All Products",
       });
     }
   } catch (error) {
@@ -90,7 +90,7 @@ export const deleteProduct = async (
     } else {
       res
         .status(400)
-        .json({ status: "Faild", message: "Something went wrong" });
+        .json({ status: "Faild", message: "Couldn't Delete a product" });
     }
   } catch (error) {
     next(error);
@@ -113,7 +113,7 @@ export const updateProduct = async (
     } else {
       res
         .status(400)
-        .json({ status: "Faild", message: "Something went wrong" });
+        .json({ status: "Faild", message: "Couldn't Update a product" });
     }
   } catch (error) {
     next(error);

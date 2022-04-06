@@ -63,7 +63,7 @@ export const selectAll = async (
   try {
     const users = await user.selectAll();
 
-    if (users.length) {
+    if (users) {
       res.json({
         status: "Succeded",
         message: "Selected All Users",
@@ -72,7 +72,8 @@ export const selectAll = async (
     } else {
       res.status(400).send({
         status: "Faild",
-        message: "Something went wrong",
+        message: "Couldn't select users",
+        users,
       });
     }
   } catch (error) {
@@ -95,7 +96,7 @@ export const deleteUser = async (
     } else {
       res
         .status(400)
-        .json({ status: "Faild", message: "Something went wrong" });
+        .json({ status: "Faild", message: "Couldn't delete a user" });
     }
   } catch (error) {
     next(error);
@@ -118,7 +119,7 @@ export const updateUser = async (
     } else {
       res
         .status(400)
-        .json({ status: "Faild", message: "Something went wrong" });
+        .json({ status: "Faild", message: "Couldn't update user" });
     }
   } catch (error) {
     next(error);
