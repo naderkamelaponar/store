@@ -2,7 +2,6 @@ import { Router, Response, Request } from "express";
 import * as ordersController from "../controllers/orders.controller";
 import { authorizationMiddleWare } from "../middlewares/auth.methods";
 const orderRouter = Router();
-orderRouter.use(authorizationMiddleWare);
 
 orderRouter
   .route("/users/:user_id/orders")

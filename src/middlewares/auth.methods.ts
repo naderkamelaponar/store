@@ -13,13 +13,15 @@ export const authorizationMiddleWare = (
     if (authHeader) {
       const token = authHeader.split(" ")[1];
       const decode = jwt.verify(token, config.tokenSecret as string);
-      if (decode) {
+      const tokenId = JSON.parse(JSON.stringify(decode))["user"]["id"];
+      const senderId = req.params.id;
+      if (decode && tokenId === senderId) {
         next();
       } else {
-        res.status(401).json({ error: "something went wrong" });
+        res.status(401).json({ error: "Unable to Authorize the user" });
       }
     } else {
-      res.status(401).json({ error: "something went wrong" });
+      res.status(401).json({ error: "Unable to Authorize the user" });
     }
     return;
   } catch (error) {

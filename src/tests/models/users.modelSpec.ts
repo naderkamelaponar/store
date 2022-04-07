@@ -1,10 +1,12 @@
 import { User, UserModel } from "../../models/users.model";
 const user: User = {
   username: "naderkamel",
-  password: "12345",
-  first_name: "nader",
-  last_name: "kamel",
-  email: "email@gmail.com",
+  email: "nader.kamel.the.programmer@gmail.com",
+  firstName: "nader",
+  lastName: "kamel",
+  mobilePhone: "01100390905",
+  shippingAddress: "Alexandria Egypt",
+  password: "password1234",
 };
 const userModelMethods = new UserModel();
 
@@ -22,21 +24,30 @@ describe("Test The Users Model", () => {
       const resault = await userModelMethods.create(user);
       expect(resault).toBe(null);
     });
+    it("Should Not CREATE a new user with a Taken email", async () => {
+      const resault = await userModelMethods.create(user);
+      expect(resault).toBe(null);
+    });
   });
   describe("Test the LOGIN Method", () => {
     it("Should have a LOGIN method", () => {
       expect(userModelMethods.login).toBeDefined();
     });
-    it("Should LOGIN a user with the Correct Credintals", async () => {
+    it("Should LOGIN a user with the username", async () => {
       const resault = await userModelMethods.login(
         user.username,
-        user.password
+        user.password,
+        "username"
       );
       expect(resault?.id).toEqual(user.id);
     });
-    it("Should Not LOGIN a user with Incorrect Credintals", async () => {
-      const resault = await userModelMethods.login("ss", "ss");
-      expect(resault).toBe(null);
+    it("Should LOGIN a user with the email", async () => {
+      const resault = await userModelMethods.login(
+        user.email,
+        user.password,
+        "email"
+      );
+      expect(resault?.id).toEqual(user.id);
     });
   });
   describe("Test the SELECTUSER Method", () => {
@@ -56,23 +67,32 @@ describe("Test The Users Model", () => {
       const resault = await userModelMethods.updateUser(user);
       expect(resault?.username).toEqual(user.username);
     });
+    it("Should UPDATE with the same email", async () => {
+      const resault = await userModelMethods.updateUser(user);
+      expect(resault?.email).toEqual(user.email);
+    });
     it("Should UPDATE with a new username", async () => {
       user.username = "naderaponar";
       const resault = await userModelMethods.updateUser(user);
       expect(resault?.username).toBe(user.username);
     });
-    it("Should NOT UPDATE with a taken username", async () => {
-      user.username = "naderaponar";
+    it("Should UPDATE with a new email", async () => {
+      user.email = "aponarcorp@outlook.com";
+      const resault = await userModelMethods.updateUser(user);
+      expect(resault?.email).toBe(user.email);
+    });
+    it("Should NOT UPDATE with a taken username Or a taken email", async () => {
       const newUser: User = {
-        email: "email",
-        username: "naderkamel",
-        first_name: "nader",
-        last_name: "kamel",
+        email: "aponarcorp@outlook.com",
+        username: "naderaponar",
+        firstName: "nader",
+        lastName: "kamel",
+        mobilePhone: "01100390905",
         password: "1234",
+        shippingAddress: "Alexandria Egypt",
       };
       userModelMethods.create(newUser);
-      user.username = "naderkamel";
-      const resault = await userModelMethods.updateUser(user);
+      const resault = await userModelMethods.updateUser(newUser);
       expect(resault).toBe(null);
     });
   });
@@ -82,7 +102,7 @@ describe("Test The Users Model", () => {
     });
     it("Should SELECTALL users", async () => {
       const resault = await userModelMethods.selectAll();
-      expect(resault?.length).toBeGreaterThan(1);
+      expect(resault?.length).toBeGreaterThan(0);
     });
   });
   describe("Test the DELETE Method", () => {

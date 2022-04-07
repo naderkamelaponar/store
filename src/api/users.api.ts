@@ -6,9 +6,9 @@ userRoute
   .route("/users")
   .post(userController.create)
   .get(userController.selectAll);
-userRoute.route("/users/user/:id").get(userController.selectUser);
 userRoute
-  .route("/users/user")
+  .route("/users/user/:id")
+  .get(authorizationMiddleWare, userController.selectUser)
   .delete(authorizationMiddleWare, userController.deleteUser)
   .patch(authorizationMiddleWare, userController.updateUser);
 userRoute.route("/users/login").post(userController.authinticate);

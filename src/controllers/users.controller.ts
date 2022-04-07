@@ -14,7 +14,6 @@ export const create = async (
   try {
     const newUser = await user.create(req.body);
     if (newUser) {
-      //const token = jwt.sign({ user: newUser }, config.tokenSecret as string);
       res.json({
         status: "Success",
         message: "New User has been created",
@@ -38,7 +37,6 @@ export const selectUser = async (
   try {
     const userId: string = req.params.id;
     const selectedUser = await user.selectUser(userId);
-    console.log(userId, req.params);
     if (selectedUser) {
       res.json({
         status: "Success",
@@ -86,12 +84,15 @@ export const deleteUser = async (
   next: NextFunction
 ) => {
   try {
-    const resault = await user.delete(req.body.id);
-    if (resault !== undefined) {
+    const resault = await user.delete(req.params.id);
+    if (resault !== null) {
+      const newData = resault;
+      newData.id = config.tokenSecret;
       res.json({
         status: "Succeded",
         message: "User has been deleted",
         data: resault,
+        token: token(newData),
       });
     } else {
       res
@@ -122,7 +123,7 @@ export const updateUser = async (
         .json({ status: "Faild", message: "Couldn't update user" });
     }
   } catch (error) {
-    next(error);
+    next();
   }
 };
 export const authinticate = async (
@@ -131,9 +132,11 @@ export const authinticate = async (
   next: NextFunction
 ) => {
   try {
-    const { username, password } = req.body;
-    const userInfo = await user.login(username, password);
-    if (userInfo?.username === username) {
+    const loginWord = req.body.username ? req.body.username : req.body.email;
+    const password = req.body.password;
+    const criteria = req.body.username ? "username" : "email";
+    const userInfo = await user.login(loginWord, password, criteria);
+    if (userInfo?.username === loginWord || userInfo?.email === loginWord) {
       res.json({
         status: "Succeded",
         message: "Authorized User",
