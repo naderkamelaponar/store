@@ -1,9 +1,9 @@
-import { Product, ProductModel } from "../../models/products.model";
+import { Product, ProductsModel } from "../../models/products.model";
 const product: Product = {
    product_name: "BRIDGESTONE",
    price: 1200,
 };
-const productModelMethods = new ProductModel();
+const productModelMethods = new ProductsModel();
 
 describe("Test The products Model", () => {
    describe("Test the CREATE Method", () => {

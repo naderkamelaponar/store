@@ -1,6 +1,5 @@
 // بسم الله الرحمن الرحيم
 import { Request, Response, NextFunction } from "express";
-
 export const usersInputValidations = async (
    req: Request,
    res: Response,
@@ -14,7 +13,9 @@ export const usersInputValidations = async (
       shipping_address,
       password,
    } = req.body;
+
    const resJson = { status: "FAILD", message: "" };
+
    if (email === undefined || email === "") {
       resJson.message = "Email is required";
       return res.status(400).json(resJson);

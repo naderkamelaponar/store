@@ -33,8 +33,8 @@ export const selectOrder = async (
    next: NextFunction
 ): Promise<void> => {
    try {
-      const orderId: string = req.params.orderId;
-      const userId: string = req.params.userId;
+      const orderId: string = req.params.order_id;
+      const userId: string = req.params.user_id;
       const selectedOrder = await order.selectOrder(orderId, userId);
       if (selectedOrder) {
          res.json({
@@ -45,11 +45,11 @@ export const selectOrder = async (
       } else {
          res.status(400).json({
             status: "Faild",
-            message: "Couldn't Select a product",
+            message: "Couldn't Select an order ",
          });
       }
    } catch (error) {
-      next();
+      next(error);
    }
 };
 export const selectAll = async (
@@ -58,7 +58,7 @@ export const selectAll = async (
    next: NextFunction
 ): Promise<void> => {
    try {
-      const userId: string = req.params.id;
+      const userId: string = req.params.user_id;
       const orders = await order.selectAll(userId);
       if (orders) {
          res.json({
@@ -76,82 +76,25 @@ export const selectAll = async (
       next(error);
    }
 };
-export const deleteFromCart = async (
-   req: Request,
-   res: Response,
-   next: NextFunction
-): Promise<void> => {
-   try {
-      const { orderId } = req.params;
-      const { productOrderId } = req.body;
-      const resault = await order.deleteFromCart(
-         productOrderId,
-         orderId
-      );
-      if (resault) {
-         res.json({
-            status: "Succeded",
-            message: "product has been deleted from cart",
-            data: resault,
-         });
-      } else {
-         res.status(400).json({
-            status: "Faild",
-            message: "Couldn't delete Product from Cart",
-         });
-      }
-   } catch (error) {
-      next(error);
-   }
-};
-export const addToCart = async (
-   req: Request,
-   res: Response,
-   next: NextFunction
-): Promise<void> => {
-   try {
-      const { product_id, quantity } = req.body;
-      const orderId = req.params.order_id;
-      const update = await order.addToCart(
-         quantity,
-         orderId,
-         product_id
-      );
-
-      if (update) {
-         res.json({
-            status: "Succeded",
-            message: "product in cart has been Updated",
-            data: { product: update },
-         });
-      } else {
-         res.status(400).json({
-            status: "Faild",
-            message: "Couldn't update product in cart",
-         });
-      }
-   } catch (error) {
-      next(error);
-   }
-};
-export const orderProducts = async (
+export const completeOrder = async (
    req: Request,
    res: Response,
    next: NextFunction
 ): Promise<void> => {
    try {
       const orderId: string = req.params.order_id;
-      const selectedOrder = await order.orderProducts(orderId);
-      if (selectedOrder) {
+      const userId: string = req.params.user_id;
+      const newOrder = await order.completeOrder(orderId, userId);
+      if (newOrder) {
          res.json({
             status: "Success",
-            message: "Selected an Order product",
-            data: { order: selectedOrder },
+            message: "Order Completed Thanx for purchasing",
+            data: { order: newOrder },
          });
       } else {
          res.status(400).json({
             status: "Faild",
-            message: "Couldn't retrive the Order products",
+            message: "Couldn't complete the Order",
          });
       }
    } catch (error) {

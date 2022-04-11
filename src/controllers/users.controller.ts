@@ -1,8 +1,8 @@
 import config from "../config";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { User, UserModel } from "../models/users.model";
-const user = new UserModel();
+import { User, UsersModel } from "../models/users.model";
+const user = new UsersModel();
 const token = (u: User): string => {
    return jwt.sign({ user: u }, config.tokenSecret as string);
 };
@@ -85,13 +85,10 @@ export const deleteUser = async (
    try {
       const resault = await user.delete(req.params.id);
       if (resault !== null) {
-         const newData = resault;
-         newData.id = config.tokenSecret;
          res.json({
             status: "Succeded",
             message: "User has been deleted",
             data: resault,
-            token: token(newData),
          });
       } else {
          res.status(400).json({
@@ -143,10 +140,7 @@ export const authinticate = async (
          password,
          criteria
       );
-      if (
-         userInfo?.username === loginWord ||
-         userInfo?.email === loginWord
-      ) {
+      if (userInfo?.id) {
          res.json({
             status: "Succeded",
             message: "Authorized User",
@@ -155,6 +149,34 @@ export const authinticate = async (
                token: token(userInfo as User),
             },
          });
+      } else {
+         res.status(401).json({
+            status: "Faild",
+            message: "UnAuthorized User",
+         });
+      }
+   } catch (error) {
+      next(error);
+   }
+};
+export const confirmation = async (
+   req: Request,
+   res: Response,
+   next: NextFunction
+): Promise<void> => {
+   try {
+      const loginWord = req.body.username
+         ? req.body.username
+         : req.body.email;
+      const password = req.body.password;
+      const criteria = req.body.username ? "username" : "email";
+      const userInfo = await user.login(
+         loginWord,
+         password,
+         criteria
+      );
+      if (userInfo?.id) {
+         next();
       } else {
          res.status(401).json({
             status: "Faild",

@@ -5,6 +5,7 @@ export const client = new Pool({
    host: config.host,
    user: config.user,
    password: config.password,
+   max: 16,
 });
 client.on("error", (error: Error) => {
    console.error(error.message);

@@ -8,46 +8,48 @@ These are the notes from a meeting with the frontend developer that describe wha
 
 #### Products
 
-- Index
-- Show (args: product id)
-- Create (args: Product)[token required]
-- [OPTIONAL] Top 5 most popular products
-- [OPTIONAL] Products by category (args: product category)
+-  Create (args: Product)[token required]
+-  Index
+-  Show (params:id)
+-  Update (params:id , args:Product) [token required]
+-  Delete (params: id ) [token required]
 
 #### Users
 
-- Index [token required]
-- Show (args: id)[token required]
-- Create (args: User)[token required]
+-  Create (args: User)
+-  Index
+-  Show (params: id)[token required]
+-  Update (params: id)[token required]
+-  Delete (params: id)[token required]
 
 #### Orders
 
-- Current Order by user (args: user id)[token required]
-- [OPTIONAL] Completed Orders by user (args: user id)[token required]
+-  Current Order by user (args: user id)[token required]
+-  [OPTIONAL] Completed Orders by user (args: user id)[token required]
 
 ## Data Shapes
 
 #### Product
 
-- id
-- name
-- price
-- [OPTIONAL] category
+-  id
+-  product_name
+-  price
 
 #### User
 
-- id
-- [additional] username `UNIQUE`
-- [additional] email `UNIQUE`
-- firstName
-- lastName
-- password
-- [additional] shippingAddress
+-  id
+-  [additional] username `UNIQUE`
+-  [additional] email `UNIQUE`
+-  first_name
+-  last_name
+-  [optional] mobile_phone
+-  [additional] shipping_address
+-  password
 
 #### Orders
 
-- id
-- id of each product in the order
-- quantity of each product in the order
-- user_id
-- status of order (active or complete)
+-  id
+-  id of each product in the order
+-  quantity of each product in the order
+-  user_id
+-  status of order (active or complete)

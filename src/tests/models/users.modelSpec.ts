@@ -1,4 +1,4 @@
-import { User, UserModel } from "../../models/users.model";
+import { User, UsersModel } from "../../models/users.model";
 const user: User = {
    username: "naderkamel",
    email: "nader.kamel.the.programmer@gmail.com",
@@ -8,7 +8,7 @@ const user: User = {
    shipping_address: "Alexandria Egypt",
    password: "password1234",
 };
-const userModelMethods = new UserModel();
+const userModelMethods = new UsersModel();
 
 describe(">>>>>> Test The Users Model <<<<<<", () => {
    describe("Test the CREATE Method", () => {

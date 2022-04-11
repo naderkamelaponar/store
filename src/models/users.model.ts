@@ -33,7 +33,28 @@ const hashPassword = (password: string): string => {
    return bcrypt.hashSync(`${config.pepper}${password}`, salt);
 };
 
-export class UserModel {
+export class UsersModel {
+   async idExists(id: string): Promise<boolean> {
+      const pattern =
+         /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+      if (!pattern.test(id)) {
+         return false;
+      }
+      try {
+         const conn = await client.connect();
+         const sql = `SELECT * FROM users_table WHERE id =($1)`;
+
+         const resault = await conn.query(sql, [id]);
+
+         conn.release();
+         if (resault.rows.length) {
+            return true;
+         }
+         return false;
+      } catch (error) {
+         throw new Error(`error ${error}`);
+      }
+   }
    async selectAll(): Promise<User[] | null> {
       try {
          const conn = await client.connect();

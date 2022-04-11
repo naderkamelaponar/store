@@ -1,7 +1,8 @@
-import { Router, Response, Request } from "express";
+import { Router } from "express";
 import * as productController from "../controllers/products.controller";
 import { authorizationMiddleWare } from "../middlewares/auth.methods";
 import { productsInputValidations } from "../middlewares/products.inputs.validations";
+import { productIdChecker } from "../middlewares/id.checker";
 const productRoute = Router();
 productRoute
    .route("/products")
@@ -13,18 +14,17 @@ productRoute
    .get(productController.selectAll);
 productRoute
    .route("/products/:id")
-   .get(productController.selectProduct)
-   .delete(authorizationMiddleWare, productController.deleteProduct)
+   .get(productIdChecker, productController.selectProduct)
+   .delete(
+      authorizationMiddleWare,
+      productIdChecker,
+      productController.deleteProduct
+   )
    .patch(
       authorizationMiddleWare,
+      productIdChecker,
       productsInputValidations,
       productController.updateProduct
    );
-productRoute.use((_req: Request, res: Response): void => {
-   res.status(404).send({
-      subject: "Error",
-      message: "Something went wrong",
-      at: "Products",
-   });
-});
+
 export default productRoute;

@@ -5,7 +5,28 @@ export type Product = {
    price: number;
 };
 
-export class ProductModel {
+export class ProductsModel {
+   async idExists(id: string): Promise<boolean> {
+      try {
+         const pattern =
+            /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+         if (!pattern.test(id)) {
+            return false;
+         }
+         const conn = await client.connect();
+         const sql = `SELECT * FROM products_table WHERE id =($1)`;
+
+         const resault = await conn.query(sql, [id]);
+
+         conn.release();
+         if (resault.rows.length) {
+            return true;
+         }
+         return false;
+      } catch (error) {
+         throw new Error(`error ${error}`);
+      }
+   }
    async selectAll(): Promise<Product[] | null> {
       try {
          const conn = await client.connect();

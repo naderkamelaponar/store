@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { ProductModel } from "../models/products.model";
+import { ProductsModel } from "../models/products.model";
 
-const product = new ProductModel();
+const product = new ProductsModel();
 
 export const create = async (
    req: Request,

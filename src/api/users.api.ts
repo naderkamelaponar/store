@@ -1,7 +1,8 @@
-import { Router, Response, Request } from "express";
+import { Router } from "express";
 import * as userController from "../controllers/users.controller";
 import { authorizationMiddleWare } from "../middlewares/auth.methods";
 import { usersInputValidations } from "../middlewares/users.inputs.validations";
+import { userIdChecker } from "../middlewares/id.checker";
 const userRoute = Router();
 userRoute
    .route("/users")
@@ -9,19 +10,22 @@ userRoute
    .get(userController.selectAll);
 userRoute
    .route("/users/:id")
-   .get(authorizationMiddleWare, userController.selectUser)
-   .delete(authorizationMiddleWare, userController.deleteUser)
+   .get(
+      authorizationMiddleWare,
+      userIdChecker,
+      userController.selectUser
+   )
+   .delete(
+      authorizationMiddleWare,
+      userIdChecker,
+      userController.confirmation,
+      userController.deleteUser
+   )
    .patch(
       authorizationMiddleWare,
+      userIdChecker,
       usersInputValidations,
       userController.updateUser
    );
 userRoute.route("/users/login").post(userController.authinticate);
-userRoute.use((_req: Request, res: Response): void => {
-   res.status(404).send({
-      subject: "Error",
-      message: "Something went wrong",
-      at: "Users",
-   });
-});
 export default userRoute;

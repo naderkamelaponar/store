@@ -24,7 +24,6 @@ app.use((_req: Request, res: Response): void => {
    res.status(404).send({
       subject: "Error",
       message: "Something went wrong",
-      at: "Home",
    });
 });
 app.listen(3000, function () {
