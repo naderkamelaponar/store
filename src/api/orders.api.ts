@@ -1,10 +1,10 @@
 import { Router } from "express";
-import * as ordersController from "../controllers/orders.controller";
 import { authorizationMiddleWare } from "../middlewares/auth.methods";
-import * as idsChecker from "../middlewares/id.checker";
-import * as cartController from "../controllers/shopping.carts.cotroller";
 import { cartsInputsValidation } from "../middlewares/carts.inputs.validations";
 import { confirmation } from "../controllers/users.controller";
+import * as ordersController from "../controllers/orders.controller";
+import * as idsChecker from "../middlewares/id.checker";
+import * as cartController from "../controllers/shopping.carts.cotroller";
 const orderRouter = Router();
 orderRouter.use(authorizationMiddleWare, idsChecker.userIdChecker);
 orderRouter
@@ -24,12 +24,16 @@ orderRouter
       cartsInputsValidation,
       cartController.updateCart
    )
-   .delete(idsChecker.orderIdChecker, cartController.deleteFromCart);
+   .delete(
+      idsChecker.orderIdChecker,
+      cartsInputsValidation,
+      cartController.deleteFromCart
+   );
 orderRouter
    .route("/users/:user_id/orders/:order_id/products")
-   .get(idsChecker.orderIdChecker, cartController.showAllProducts);
+   .get(idsChecker.orderIdChecker, cartController.viewOrderProducts);
 orderRouter
-   .route("/users/:user_id/orders/:order_id/checkout")
+   .route("/users/:user_id/orders/:order_id/complete")
    .post(
       idsChecker.orderIdChecker,
       confirmation,

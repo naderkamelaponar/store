@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { OrdersModel } from "../models/orders.model";
-
 const order = new OrdersModel();
-
 export const create = async (
    req: Request,
    res: Response,
@@ -10,6 +8,15 @@ export const create = async (
 ): Promise<void> => {
    try {
       const userId: string = req.params.user_id;
+      const isActive = await order.isActive(userId);
+      if (isActive) {
+         res.json({
+            status: "Success",
+            message: "Order is Active",
+            data: { order: isActive },
+         });
+         return;
+      }
       const newOrder = await order.newOrder(userId);
       if (newOrder) {
          res.json({
@@ -84,12 +91,14 @@ export const completeOrder = async (
    try {
       const orderId: string = req.params.order_id;
       const userId: string = req.params.user_id;
-      const newOrder = await order.completeOrder(orderId, userId);
-      if (newOrder) {
+      const isActive = await order.isActive(userId);
+
+      const complete = await order.completeOrder(orderId, userId);
+      if (complete && isActive?.id == orderId) {
          res.json({
             status: "Success",
             message: "Order Completed Thanx for purchasing",
-            data: { order: newOrder },
+            data: { order: complete },
          });
       } else {
          res.status(400).json({

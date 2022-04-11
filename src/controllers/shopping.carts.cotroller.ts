@@ -1,9 +1,7 @@
 // بسم الله الرحمن الرحيم
 import { NextFunction, Request, Response } from "express";
 import { shoppingCartsModel } from "../models/shopping.carts.model";
-
 const cart = new shoppingCartsModel();
-
 export const deleteFromCart = async (
    req: Request,
    res: Response,
@@ -101,7 +99,7 @@ export const updateCart = async (
       next(error);
    }
 };
-export const showAllProducts = async (
+export const viewOrderProducts = async (
    req: Request,
    res: Response,
    next: NextFunction
@@ -113,7 +111,7 @@ export const showAllProducts = async (
          res.json({
             status: "Success",
             message: "Selected  cart products",
-            data: { order: selectedOrder },
+            data: { order_id: orderId, order: selectedOrder },
          });
       } else {
          res.status(400).json({

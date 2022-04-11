@@ -47,10 +47,7 @@ export class UsersModel {
          const resault = await conn.query(sql, [id]);
 
          conn.release();
-         if (resault.rows.length) {
-            return true;
-         }
-         return false;
+         return resault.rows.length ? true : false;
       } catch (error) {
          throw new Error(`error ${error}`);
       }
@@ -61,11 +58,7 @@ export class UsersModel {
          const sql = `SELECT ${colmuns} FROM users_table`;
          const resault = await conn.query(sql);
          conn.release();
-         if (resault.rows.length) {
-            return resault.rows;
-         } else {
-            return null;
-         }
+         return resault.rows.length ? resault.rows : null;
       } catch (error) {
          throw new Error(`error ${error}`);
       }
@@ -76,11 +69,7 @@ export class UsersModel {
          const sql = `SELECT ${colmuns} FROM users_table WHERE id=$1 `;
          const resault = await conn.query(sql, [id]);
          conn.release();
-         if (resault.rows.length) {
-            return resault.rows[0];
-         } else {
-            return null;
-         }
+         return resault.rows.length ? resault.rows[0] : null;
       } catch (err) {
          throw new Error(`error ${err}`);
       }
@@ -103,11 +92,7 @@ export class UsersModel {
             hashPassword(u.password),
          ]);
          conn.release();
-         if (resault.rows.length) {
-            return resault.rows[0];
-         } else {
-            return null;
-         }
+         return resault.rows.length ? resault.rows[0] : null;
       } catch (error) {
          throw new Error(` Error: ${error}`);
       }
@@ -118,11 +103,7 @@ export class UsersModel {
          const sql = `DELETE FROM users_table WHERE id=$1 RETURNING ${colmuns}`;
          const resault = await conn.query(sql, [id]);
          conn.release();
-         if (resault.rows.length) {
-            return resault.rows[0];
-         } else {
-            return null;
-         }
+         return resault.rows.length ? resault.rows[0] : null;
       } catch (error) {
          throw new Error(`Error:${error}`);
       }
@@ -146,11 +127,7 @@ export class UsersModel {
             u.id,
          ]);
          conn.release();
-         if (resault.rows.length) {
-            return resault.rows[0];
-         } else {
-            return null;
-         }
+         return resault.rows.length ? resault.rows[0] : null;
       } catch (error) {
          throw new Error(`Error:${error}`);
       }

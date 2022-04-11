@@ -1,15 +1,8 @@
 import { client } from "../database";
-import { Product } from "./products.model";
 export type Order = {
    id?: string;
-   status: string;
-   userId: string;
-};
-export type ProductOrder = {
-   id: string;
-   quantity: number;
-   orderId: string;
-   productId: string;
+   order_status: string;
+   user_id: string;
 };
 export class OrdersModel {
    async idExists(id: string): Promise<boolean> {
@@ -21,27 +14,20 @@ export class OrdersModel {
          }
          const conn = await client.connect();
          const sql = `SELECT * FROM orders_table WHERE id =($1)`;
-
          const resault = await conn.query(sql, [id]);
-
          conn.release();
-         if (resault.rows.length) {
-            return true;
-         }
-         return false;
+         return resault.rows.length ? true : false;
       } catch (error) {
          throw new Error(`error ${error}`);
       }
    }
-   async isActive(id: string): Promise<boolean> {
+   async isActive(userId: string): Promise<Order | null> {
       try {
          const conn = await client.connect();
-         const sql = `SELECT * FROM orders_table WHERE id=($1) AND order_status='active'`;
-
-         const resault = await conn.query(sql, [id]);
-
+         const sql = `SELECT * FROM orders_table WHERE user_id=($1) AND order_status='active'`;
+         const resault = await conn.query(sql, [userId]);
          conn.release();
-         return resault.rows.length ? true : false;
+         return resault.rows.length ? resault.rows[0] : null;
       } catch (error) {
          throw new Error(`error ${error}`);
       }
@@ -52,11 +38,7 @@ export class OrdersModel {
          const sql = "SELECT * FROM orders_table WHERE user_id=$1 ";
          const resault = await conn.query(sql, [userId]);
          conn.release();
-         if (resault.rows.length) {
-            return resault.rows;
-         } else {
-            return null;
-         }
+         return resault.rows.length ? resault.rows : null;
       } catch (error) {
          throw new Error(`error ${error}`);
       }
@@ -71,16 +53,11 @@ export class OrdersModel {
             "SELECT * FROM orders_table WHERE user_id=$1 AND id=$2";
          const resault = await conn.query(sql, [userId, orderId]);
          conn.release();
-         if (resault.rows.length) {
-            return resault.rows[0];
-         } else {
-            return null;
-         }
+         return resault.rows.length ? resault.rows[0] : null;
       } catch (error) {
          throw new Error(`error ${error}`);
       }
    }
-
    async newOrder(userId: string): Promise<Order | null> {
       try {
          const conn = await client.connect();
@@ -104,18 +81,14 @@ export class OrdersModel {
    async completeOrder(
       orderId: string,
       userId: string
-   ): Promise<ProductOrder | null> {
+   ): Promise<Order | null> {
       try {
          const conn = await client.connect();
          const sql =
             "UPDATE  orders_table SET order_status='complete' WHERE id=$1 AND user_id=$2 RETURNING *";
          const resault = await conn.query(sql, [orderId, userId]);
          conn.release();
-         if (resault.rows.length) {
-            return resault.rows[0];
-         } else {
-            return null;
-         }
+         return resault.rows.length ? resault.rows[0] : null;
       } catch (error) {
          throw new Error(`Error:${error}`);
       }

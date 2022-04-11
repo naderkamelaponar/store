@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { ProductsModel } from "../models/products.model";
-
 const product = new ProductsModel();
-
 export const create = async (
    req: Request,
    res: Response,
@@ -47,7 +45,7 @@ export const selectProduct = async (
          });
       }
    } catch (error) {
-      next();
+      next(error);
    }
 };
 export const selectAll = async (

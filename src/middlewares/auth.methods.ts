@@ -1,8 +1,7 @@
 // بسم الله الرحمن الرحيم
+import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import config from "../config";
-import { Request, Response, NextFunction } from "express";
-
 export const authorizationMiddleWare = (
    req: Request,
    res: Response,
@@ -34,6 +33,8 @@ export const authorizationMiddleWare = (
       }
       return;
    } catch (error) {
-      res.status(401).json({ error });
+      res.status(401).json({
+         error: "Unable to Authorize the user",
+      });
    }
 };

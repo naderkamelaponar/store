@@ -3,14 +3,12 @@ import { Request, Response, NextFunction } from "express";
 import { UsersModel } from "../models/users.model";
 import { ProductsModel } from "../models/products.model";
 import { OrdersModel } from "../models/orders.model";
-
 export const userIdChecker = async (
    req: Request,
    res: Response,
    next: NextFunction
 ): Promise<void | unknown> => {
    let userId = "";
-
    if (req.url.startsWith("/users/")) {
       userId = req.params.id;
    }
@@ -31,7 +29,6 @@ export const productIdChecker = async (
    next: NextFunction
 ): Promise<void | unknown> => {
    const productId = req.params.id;
-
    const product = new ProductsModel();
    const isExists = await product.idExists(productId);
    if (isExists) {

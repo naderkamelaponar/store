@@ -2,9 +2,11 @@
 import { client } from "../database";
 import { Product } from "./products.model";
 export type ProductOrder = {
-   list_index?: number;
+   list_no?: number;
    product_id: string;
+   product_name: string;
    quantity: number;
+   price: number;
 };
 async function setListNo(): Promise<boolean> {
    try {
@@ -80,11 +82,7 @@ export class shoppingCartsModel {
             productId,
          ]);
          conn.release();
-         if (resault.rows.length) {
-            return resault.rows[0];
-         } else {
-            return null;
-         }
+         return resault.rows.length ? resault.rows[0] : null;
       } catch (error) {
          throw new Error(`Error:${error}`);
       }
@@ -104,11 +102,7 @@ export class shoppingCartsModel {
             orderId,
          ]);
          conn.release();
-         if (resault.rows.length) {
-            return resault.rows[0];
-         } else {
-            return null;
-         }
+         return resault.rows.length ? resault.rows[0] : null;
       } catch (error) {
          throw new Error(`Error:${error}`);
       }
@@ -124,11 +118,9 @@ export class shoppingCartsModel {
          const resault = await conn.query(sql, [orderId, productId]);
          conn.release();
          const setNos = await setListNo();
-         if (resault.rows.length && setNos) {
-            return resault.rows[0];
-         } else {
-            return null;
-         }
+         return resault.rows.length && setNos
+            ? resault.rows[0]
+            : null;
       } catch (error) {
          throw new Error(`Error:${error}`);
       }
@@ -140,11 +132,7 @@ export class shoppingCartsModel {
 
          const resault = await conn.query(sql, [orderId]);
          conn.release();
-         if (resault.rows.length) {
-            return resault.rows;
-         } else {
-            return null;
-         }
+         return resault.rows.length ? resault.rows : null;
       } catch (err) {
          throw new Error(`error ${err}`);
       }

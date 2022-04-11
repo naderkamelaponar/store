@@ -1,7 +1,7 @@
-import config from "../config";
 import { NextFunction, Request, Response } from "express";
-import jwt from "jsonwebtoken";
 import { User, UsersModel } from "../models/users.model";
+import config from "../config";
+import jwt from "jsonwebtoken";
 const user = new UsersModel();
 const token = (u: User): string => {
    return jwt.sign({ user: u }, config.tokenSecret as string);
@@ -121,7 +121,7 @@ export const updateUser = async (
          });
       }
    } catch (error) {
-      next();
+      next(error);
    }
 };
 export const authinticate = async (

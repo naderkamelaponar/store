@@ -4,23 +4,17 @@ export type Product = {
    product_name: string;
    price: number;
 };
-
 export class ProductsModel {
    async idExists(id: string): Promise<boolean> {
       try {
          const pattern =
             /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
-         if (!pattern.test(id)) {
-            return false;
-         }
-         const conn = await client.connect();
-         const sql = `SELECT * FROM products_table WHERE id =($1)`;
-
-         const resault = await conn.query(sql, [id]);
-
-         conn.release();
-         if (resault.rows.length) {
-            return true;
+         if (pattern.test(id)) {
+            const conn = await client.connect();
+            const sql = `SELECT * FROM products_table WHERE id =($1)`;
+            const resault = await conn.query(sql, [id]);
+            conn.release();
+            return resault.rows.length ? true : false;
          }
          return false;
       } catch (error) {
@@ -33,11 +27,7 @@ export class ProductsModel {
          const sql = "SELECT * FROM products_table ";
          const resault = await conn.query(sql);
          conn.release();
-         if (resault.rows.length) {
-            return resault.rows;
-         } else {
-            return null;
-         }
+         return resault.rows.length ? resault.rows : null;
       } catch (error) {
          throw new Error(`error ${error}`);
       }
@@ -48,11 +38,7 @@ export class ProductsModel {
          const sql = `SELECT * FROM products_table WHERE id=$1 `;
          const resault = await conn.query(sql, [id]);
          conn.release();
-         if (resault.rows.length) {
-            return resault.rows[0];
-         } else {
-            return null;
-         }
+         return resault.rows.length ? resault.rows[0] : null;
       } catch (err) {
          throw new Error(`error ${err}`);
       }
@@ -67,11 +53,7 @@ export class ProductsModel {
             p.price,
          ]);
          conn.release();
-         if (resault.rows.length) {
-            return resault.rows[0];
-         } else {
-            return null;
-         }
+         return resault.rows.length ? resault.rows[0] : null;
       } catch (error) {
          throw new Error(` Error: ${error}`);
       }
@@ -83,11 +65,7 @@ export class ProductsModel {
             "DELETE FROM products_table WHERE id=$1 RETURNING *";
          const resault = await conn.query(sql, [id]);
          conn.release();
-         if (resault.rows.length) {
-            return resault.rows[0];
-         } else {
-            return null;
-         }
+         return resault.rows.length ? resault.rows[0] : null;
       } catch (error) {
          throw new Error(`Error:${error}`);
       }
@@ -103,11 +81,7 @@ export class ProductsModel {
             p.id,
          ]);
          conn.release();
-         if (resault.rows.length) {
-            return resault.rows[0];
-         } else {
-            return null;
-         }
+         return resault.rows.length ? resault.rows[0] : null;
       } catch (error) {
          throw new Error(`Error:${error}`);
       }

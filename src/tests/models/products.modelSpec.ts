@@ -5,7 +5,7 @@ const product: Product = {
 };
 const productModelMethods = new ProductsModel();
 
-describe("Test The products Model", () => {
+describe(">>>>>> Test The products Model <<<<<<", () => {
    describe("Test the CREATE Method", () => {
       it("Should have a CREATE method", () => {
          expect(productModelMethods.create).toBeDefined();
@@ -45,7 +45,7 @@ describe("Test The products Model", () => {
       });
       it("Should SELECTALL products", async () => {
          const resault = await productModelMethods.selectAll();
-         expect(resault?.length).toBe(1);
+         expect(resault?.length).toBeGreaterThan(1);
       });
    });
    describe("Test the DELETE Method", () => {
