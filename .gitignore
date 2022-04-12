@@ -102,7 +102,5 @@ dist
 
 # TernJS port file
 .tern-port
-#Database json
-database.json
 #nvm
 .nvm/
