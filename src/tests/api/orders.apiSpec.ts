@@ -122,7 +122,7 @@ describe(">>>>>> Test Orders  Api <<<<<<", async () => {
          .auth(token, { type: "bearer" });
       expect(response.status).toEqual(200);
    });
-   it("[post]/users/:user_id/orders/:order_id/complete complete toEqual 401 with login Confirmation ", async () => {
+   it("[post]/users/:user_id/orders/:order_id/complete complete toEqual 401 without login Confirmation ", async () => {
       const response = await supertest(app)
          .post(`/users/${user.id}/orders/${order.id}/complete`)
          .auth(token, { type: "bearer" });
