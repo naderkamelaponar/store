@@ -1,11 +1,13 @@
+// بسم الله الرحمن الرحيم
 import express, { Request, Response } from "express";
 import morgan from "morgan";
 import cors from "cors";
 import config from "./config";
-import userRoute from "./api/users.api";
-import productRoute from "./api/products.api";
-import orderRouter from "./api/orders.api";
-const start = "بسم الله الرحمن الرحيم";
+import { routers } from "./api";
+//import userRoute from "./api/users.api";
+//import productRoute from "./api/products.api";
+//import orderRouter from "./api/orders.api";
+
 const app: express.Application = express();
 const address = "0.0.0.0:3000";
 const PORT = config.port || 3000;
@@ -16,13 +18,9 @@ const corsOption = {
 app.use(morgan("common"));
 app.use(cors(corsOption));
 app.use(express.json());
-app.use(userRoute);
-app.use(productRoute);
-app.use(orderRouter);
-app.get("/", function (req: Request, res: Response): void {
-   res.send(start);
-});
-app.use((_req: Request, res: Response): void => {
+app.use("/", routers);
+
+app.use("*", (req: Request, res: Response): void => {
    res.status(404).send({
       subject: "Error",
       message: "Something went wrong",
